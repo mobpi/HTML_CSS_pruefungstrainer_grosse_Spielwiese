@@ -1,0 +1,424 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Prüfungstrainer – HTML &amp; CSS</title>
+<style>
+:root{--bg:#f5f5f5;--card:#fff;--primary:#1B4F72;--accent:#2E86C1;--light:#D6EAF8;--lighter:#EBF5FB;--green:#27AE60;--red:#C0392B;--orange:#E67E22;--text:#333;--gray:#888;--border:#e0e0e0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:900px;margin:0 auto;padding:16px}
+.btn{display:inline-block;padding:12px 32px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:1em;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;text-decoration:none}
+.btn:hover{background:var(--accent)}.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn-sm{padding:9px 20px;font-size:.9em}.btn-green{background:var(--green)}.btn-orange{background:var(--orange)}.btn-red{background:var(--red)}.btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary)}
+.btn-outline:hover{background:var(--primary);color:#fff}
+h1{color:var(--primary);font-size:1.8em}h2{color:var(--accent)}
+.hidden{display:none!important}
+
+/* START */
+#start{text-align:center;margin-top:60px}
+.start-box{background:var(--card);padding:35px;border-radius:14px;box-shadow:0 2px 15px rgba(0,0,0,.06);max-width:440px;margin:20px auto}
+.start-box label{display:block;text-align:left;font-weight:600;font-size:.85em;color:var(--primary);margin-bottom:4px}
+.start-box input{width:100%;padding:11px 14px;border:2px solid var(--border);border-radius:8px;font-size:1em;margin-bottom:16px;font-family:inherit}
+.start-box input:focus{outline:none;border-color:var(--accent)}
+
+/* MODE SELECT */
+#modes{text-align:center;padding-top:30px}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:25px}
+.mode-card{background:var(--card);border-radius:14px;padding:28px 20px;box-shadow:0 2px 12px rgba(0,0,0,.06);cursor:pointer;transition:all .2s;border:2px solid transparent;text-align:center}
+.mode-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.mode-card .icon{font-size:2.5em;margin-bottom:10px}
+.mode-card h3{color:var(--primary);margin-bottom:6px}
+.mode-card p{font-size:.85em;color:var(--gray)}
+.back-row{margin-bottom:16px}
+
+/* FLASHCARDS */
+.fc-progress{text-align:center;color:var(--gray);font-size:.9em;margin-bottom:10px}
+.fc-filters{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+.fc-filters button{padding:6px 14px;border-radius:20px;border:2px solid var(--border);background:var(--card);cursor:pointer;font-size:.82em;font-family:inherit;color:var(--text);transition:all .2s}
+.fc-filters button.active{border-color:var(--accent);background:var(--light);color:var(--primary);font-weight:600}
+.flashcard{background:var(--card);border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.07);min-height:300px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px;cursor:pointer;transition:all .3s;position:relative;text-align:center}
+.flashcard.flipped{background:var(--lighter)}
+.flashcard .fc-cat{position:absolute;top:14px;left:18px;font-size:.75em;background:var(--light);color:var(--primary);padding:3px 12px;border-radius:12px;font-weight:600}
+.flashcard .fc-level{position:absolute;top:14px;right:18px;font-size:.8em}
+.flashcard .fc-label{font-size:.75em;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.flashcard .fc-text{font-size:1.15em;max-width:600px;line-height:1.6}
+.flashcard .fc-hint{font-size:.85em;color:var(--gray);margin-top:15px}
+.fc-rate{display:flex;gap:12px;justify-content:center;margin-top:18px}
+.fc-rate button{padding:12px 22px;border-radius:10px;border:none;font-size:.95em;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.fc-rate .r-green{background:#e8f5e9;color:var(--green)}.fc-rate .r-green:hover{background:var(--green);color:#fff}
+.fc-rate .r-yellow{background:#fff8e1;color:var(--orange)}.fc-rate .r-yellow:hover{background:var(--orange);color:#fff}
+.fc-rate .r-red{background:#fce4ec;color:var(--red)}.fc-rate .r-red:hover{background:var(--red);color:#fff}
+.fc-stats{display:flex;gap:20px;justify-content:center;margin-top:14px;font-size:.85em}
+.fc-stats span{padding:4px 14px;border-radius:12px}.fc-s-green{background:#e8f5e9;color:var(--green)}.fc-s-yellow{background:#fff8e1;color:var(--orange)}.fc-s-red{background:#fce4ec;color:var(--red)}
+
+/* QUIZ */
+.q-progress{background:var(--border);border-radius:20px;height:6px;margin-bottom:14px;overflow:hidden}
+.q-bar{height:100%;background:var(--accent);border-radius:20px;transition:width .4s}
+.q-card{background:var(--card);border-radius:14px;padding:30px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.q-card .q-num{color:var(--accent);font-size:.85em;margin-bottom:4px}
+.q-card h3{color:var(--primary);font-size:1.1em;margin-bottom:14px;line-height:1.4}
+.q-card code{background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:.9em;color:var(--primary)}
+.q-options{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.q-opt{padding:13px 18px;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;font-size:.95em;background:var(--card)}
+.q-opt:hover{border-color:var(--accent);background:var(--lighter)}.q-opt.sel{border-color:var(--accent);background:var(--light)}
+.q-opt.correct{border-color:var(--green);background:#e8f5e9}.q-opt.wrong{border-color:var(--red);background:#fce4ec}
+.q-feedback{margin-top:14px;padding:12px 16px;border-radius:8px;font-size:.9em;display:none}
+.q-feedback.show{display:block}.q-feedback.ok{background:#e8f5e9;border-left:4px solid var(--green);color:#1a5e30}
+.q-feedback.nok{background:#fce4ec;border-left:4px solid var(--red);color:#7f1d1d}
+.q-nav{display:flex;justify-content:center;gap:12px;margin-top:16px}
+
+/* PLAYGROUND */
+.pg-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.pg-editor{position:relative}.pg-editor textarea{width:100%;height:380px;font-family:'Consolas','Courier New',monospace;font-size:.85em;padding:14px;border:2px solid var(--border);border-radius:10px;background:#1e1e1e;color:#d4d4d4;resize:vertical;line-height:1.6;tab-size:2}
+.pg-editor textarea:focus{outline:none;border-color:var(--accent)}
+.pg-preview{border:2px solid var(--border);border-radius:10px;overflow:hidden;background:#fff}
+.pg-preview iframe{width:100%;height:380px;border:none}
+.pg-tasks{margin-top:16px}.pg-task{background:var(--card);border-radius:10px;padding:14px 18px;margin-bottom:10px;border-left:4px solid var(--accent);font-size:.9em;cursor:pointer;transition:background .2s}
+.pg-task:hover{background:var(--lighter)}.pg-task.done{border-left-color:var(--green);opacity:.6}
+.pg-task b{color:var(--primary)}
+
+/* RESULT */
+.res-card{background:var(--card);border-radius:14px;padding:35px;box-shadow:0 2px 15px rgba(0,0,0,.06);text-align:center;margin-top:20px}
+.res-pct{font-size:3.5em;font-weight:700;margin:15px 0}.res-pct.a{color:var(--green)}.res-pct.b{color:var(--accent)}.res-pct.c{color:var(--orange)}.res-pct.d{color:var(--red)}
+.res-bars{text-align:left;margin:20px 0}.res-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:.88em}
+.res-row-name{width:200px;font-weight:600;color:var(--primary)}.res-row-bar{flex:1;background:var(--border);border-radius:8px;height:10px;overflow:hidden}
+.res-row-fill{height:100%;border-radius:8px;transition:width .8s}.res-row-sc{width:50px;text-align:right;color:var(--gray)}
+
+@media(max-width:700px){.mode-grid{grid-template-columns:1fr}.pg-layout{grid-template-columns:1fr}}
+</style></head><body>
+<div class="container">
+
+<!-- START -->
+<div id="start"><h1>🎓 Prüfungstrainer</h1><p style="color:var(--accent);margin-bottom:20px">Vorbereitung auf das mündliche Abschlussgespräch – HTML &amp; CSS</p>
+<div class="start-box"><label for="sn">Vorname und Nachname *</label><input type="text" id="sn" placeholder="Max Mustermann"/>
+<label for="sk">Klasse</label><input type="text" id="sk" placeholder="z.B. 2AVET"/>
+<button class="btn" id="btn-go" disabled onclick="enterApp()">Los geht's</button></div></div>
+
+<!-- MODUS-AUSWAHL -->
+<div id="modes" class="hidden"><p style="color:var(--gray);font-size:.9em" id="welcome-msg"></p><h2>Wähle deinen Trainingsmodus</h2>
+<div class="mode-grid">
+<div class="mode-card" onclick="openMode('fc')"><div class="icon">🗂️</div><h3>Lernkarten</h3><p>Frage lesen, nachdenken, Antwort aufdecken. Selbst bewerten: Gewusst / Teilweise / Nicht gewusst.</p></div>
+<div class="mode-card" onclick="openMode('quiz')"><div class="icon">✅</div><h3>Quiz</h3><p>20 Multiple-Choice-Fragen aus allen Kategorien. Sofortige Auswertung mit PDF-Bericht.</p></div>
+<div class="mode-card" onclick="openMode('pg')"><div class="icon">🛠️</div><h3>Code-Spielplatz</h3><p>Ändere CSS live und sieh sofort das Ergebnis. Löse kleine Aufgaben direkt am Code.</p></div>
+</div></div>
+
+<!-- LERNKARTEN -->
+<div id="fc-screen" class="hidden">
+<div class="back-row"><button class="btn btn-sm btn-outline" onclick="backToModes()">← Zurück</button></div>
+<div class="fc-filters" id="fc-filters"></div>
+<div class="fc-progress" id="fc-prog"></div>
+<div class="flashcard" id="fc-card" onclick="flipCard()"></div>
+<div class="fc-rate hidden" id="fc-rate">
+<button class="r-green" onclick="rateCard('green')">🟢 Gewusst</button>
+<button class="r-yellow" onclick="rateCard('yellow')">🟡 Teilweise</button>
+<button class="r-red" onclick="rateCard('red')">🔴 Nicht gewusst</button></div>
+<div class="fc-stats" id="fc-stats"></div></div>
+
+<!-- QUIZ -->
+<div id="quiz-screen" class="hidden">
+<div class="back-row"><button class="btn btn-sm btn-outline" onclick="backToModes()">← Zurück</button></div>
+<div class="q-progress"><div class="q-bar" id="q-bar"></div></div>
+<div id="q-area"></div>
+<div class="q-nav"><button class="btn btn-sm btn-green" id="q-check" onclick="quizCheck()">Prüfen</button>
+<button class="btn btn-sm hidden" id="q-next" onclick="quizNext()">Weiter →</button></div></div>
+
+<!-- SPIELPLATZ -->
+<div id="pg-screen" class="hidden">
+<div class="back-row"><button class="btn btn-sm btn-outline" onclick="backToModes()">← Zurück</button></div>
+<h2 style="margin-bottom:4px">🛠️ Code-Spielplatz</h2><p style="color:var(--gray);font-size:.9em;margin-bottom:10px">Ändere das CSS links – die Vorschau rechts aktualisiert sich sofort.</p>
+<div class="pg-layout"><div class="pg-editor"><textarea id="pg-css" oninput="updatePreview()" spellcheck="false"></textarea></div>
+<div class="pg-preview"><iframe id="pg-iframe"></iframe></div></div>
+<h3 style="margin-top:20px;color:var(--primary)">Aufgaben</h3>
+<div class="pg-tasks" id="pg-tasks"></div></div>
+
+<!-- ERGEBNIS -->
+<div id="result-screen" class="hidden"></div>
+</div>
+
+<script>
+// ===== DATA =====
+const allCards=[
+{cat:"A: HTML-Grundstruktur",q:"Was macht die Zeile <!DOCTYPE html>?",a:"Sie teilt dem Browser mit, dass es sich um ein HTML5-Dokument handelt. Ohne sie könnte der Browser die Seite falsch darstellen.",lv:1},
+{cat:"A: HTML-Grundstruktur",q:"Was ist der Unterschied zwischen <head> und <body>?",a:"<head> enthält unsichtbare Infos ÜBER die Seite (Titel, CSS-Link, Meta-Tags). <body> enthält den sichtbaren Inhalt.",lv:1},
+{cat:"A: HTML-Grundstruktur",q:"Was macht <meta charset=\"UTF-8\">?",a:"Setzt den Zeichensatz auf UTF-8, damit Umlaute (äöüß) und Sonderzeichen korrekt angezeigt werden.",lv:1},
+{cat:"A: HTML-Grundstruktur",q:"Was macht das <title>-Tag?",a:"Es setzt den Text im Browser-Tab – nicht auf der Seite selbst.",lv:1},
+{cat:"A: HTML-Grundstruktur",q:"Wie wird die externe CSS-Datei eingebunden?",a:'<link rel="stylesheet" href="styles.css"> im <head>-Bereich.',lv:1},
+{cat:"A: HTML-Grundstruktur",q:"Warum verwendet man eine externe CSS-Datei statt <style> im <head>?",a:"Trennung von Inhalt und Gestaltung. Bei mehreren Seiten muss man Änderungen nur an einer Stelle vornehmen.",lv:2},
+{cat:"A: HTML-Grundstruktur",q:"Was passiert, wenn du die <link>-Zeile löschst?",a:"Die Seite wird ohne jede CSS-Formatierung angezeigt – schwarzer Text auf weiß, Standard-Schrift, kein Layout.",lv:2},
+{cat:"B: Selektoren",q:"Was ist eine <div>-Box?",a:"Ein Block-Container, der andere Elemente gruppiert. Wird verwendet, um Bereiche zu schaffen (Wrapper, Sidebar, Content).",lv:1},
+{cat:"B: Selektoren",q:"Was ist der Unterschied zwischen id und class?",a:"id ist einmalig (nur 1× pro Seite), class kann auf mehrere Elemente angewendet werden. CSS: # für id, . für class.",lv:2},
+{cat:"B: Selektoren",q:"Warum hat .eintrag eine class und nicht eine id?",a:"Weil es mehrere Einträge gibt, die alle gleich formatiert werden sollen. Eine ID dürfte nur einmal vorkommen.",lv:2},
+{cat:"B: Selektoren",q:"Was bedeutet #cv-sidebar im CSS?",a:'Es spricht das Element mit id="cv-sidebar" an. Das # steht für ID-Selektor.',lv:1},
+{cat:"B: Selektoren",q:"Was bedeutet #cv-sidebar h2 im CSS?",a:"Nur h2-Überschriften INNERHALB von #cv-sidebar. Die h2 im Hauptbereich sind nicht betroffen (Nachfahren-Selektor).",lv:2},
+{cat:"B: Selektoren",q:'Im HTML steht class="eintrag", im CSS aber #eintrag. Funktioniert das?',a:"Nein! #eintrag sucht nach id, nicht nach class. Der Selektor muss zum HTML-Attribut passen.",lv:3},
+{cat:"C: CSS-Grundlagen",q:"Wie ist eine CSS-Regel aufgebaut?",a:"Selektor { Eigenschaft: Wert; } – z.B. h1 { color: #1B4F72; }. Selektor = WAS, Eigenschaft = WELCHE, Wert = WIE.",lv:1},
+{cat:"C: CSS-Grundlagen",q:"Was ist der Unterschied zwischen margin und padding?",a:"margin = Außenabstand (zwischen Elementen), padding = Innenabstand (Rand zum Inhalt). Padding wird von der Hintergrundfarbe gefüllt.",lv:2},
+{cat:"C: CSS-Grundlagen",q:"Was macht margin: auto bei einem Element mit fester Breite?",a:"Verteilt den verfügbaren Platz gleichmäßig auf links und rechts → horizontale Zentrierung.",lv:2},
+{cat:"C: CSS-Grundlagen",q:"Was macht box-sizing: border-box?",a:"Padding und Border werden IN die angegebene Breite eingerechnet, statt dazuaddiert.",lv:3},
+{cat:"C: CSS-Grundlagen",q:"Was macht * { margin: 0; padding: 0; }?",a:"Der Universal-Selektor * setzt bei ALLEN Elementen die Standardabstände auf 0 zurück.",lv:1},
+{cat:"C: CSS-Grundlagen",q:"Was bedeutet rgba(0,0,0,0.15)?",a:"Schwarz mit 15% Deckkraft. Der vierte Wert (alpha) steuert die Transparenz: 0 = unsichtbar, 1 = voll sichtbar.",lv:2},
+{cat:"D: Flexbox & Grid",q:"Was macht display: flex?",a:"Macht einen Container zur Flex-Box. Die Kinder werden nebeneinander angeordnet statt untereinander.",lv:1},
+{cat:"D: Flexbox & Grid",q:"Was bedeutet flex: 1 bei .details?",a:"'Nimm den gesamten restlichen Platz ein.' Die .zeit hat eine feste Breite, .details bekommt den Rest.",lv:2},
+{cat:"D: Flexbox & Grid",q:"Was macht display: grid?",a:"Macht einen Container zum Grid-Raster mit Zeilen UND Spalten gleichzeitig.",lv:1},
+{cat:"D: Flexbox & Grid",q:"Was bedeutet grid-template-columns: 280px 1fr?",a:"Erstellt zwei Spalten: Die linke ist 280px breit (Sidebar), die rechte nimmt den restlichen Platz ein (1fr = fraction).",lv:2},
+{cat:"D: Flexbox & Grid",q:"Was ist der Unterschied zwischen Flexbox und Grid?",a:"Flexbox ist eindimensional (Zeile ODER Spalte). Grid ist zweidimensional (Zeilen UND Spalten). Flexbox für Teile, Grid für das Gesamtlayout.",lv:2},
+{cat:"E: Bild & Design",q:"Was macht border-radius: 50% beim Profilbild?",a:"Rundet die Ecken maximal ab → aus einem Quadrat wird ein perfekter Kreis.",lv:1},
+{cat:"E: Bild & Design",q:"Was macht object-fit: cover?",a:"Das Bild füllt den Rahmen komplett aus und schneidet Überstehendes ab – ohne zu verzerren.",lv:2},
+{cat:"E: Bild & Design",q:"Wie funktionieren die Skill-Balken technisch?",a:"Zwei div-Boxen ineinander: .skill-bar (Hintergrund, volle Breite) und .skill-fill (Füllung, z.B. 85% breit per Inline-CSS).",lv:2},
+{cat:"E: Bild & Design",q:"Was macht text-transform: uppercase?",a:"Zeigt den Text in Großbuchstaben an, egal wie er im HTML geschrieben ist.",lv:1},
+{cat:"F: Änderungen",q:"Du änderst grid-template-columns: 280px 1fr auf 1fr 1fr. Was passiert?",a:"Beide Spalten werden gleich breit (je 50%). Die Sidebar wird viel breiter als vorher.",lv:2},
+{cat:"F: Änderungen",q:"Du entfernst display: flex bei .eintrag. Was passiert?",a:"Zeitraum und Details stehen untereinander statt nebeneinander – die tabellarische Ausrichtung geht verloren.",lv:2},
+{cat:"F: Änderungen",q:"Du entfernst object-fit: cover beim Profilbild. Was passiert?",a:"Das Bild wird in den 150×150px-Rahmen gequetscht und verzerrt.",lv:2},
+{cat:"F: Änderungen",q:"Du löschst die max-width bei #cv-page. Was passiert?",a:"Die Seite dehnt sich über die gesamte Bildschirmbreite aus. Auf einem großen Monitor werden die Zeilen unleserlich lang.",lv:2},
+{cat:"F: Änderungen",q:"Du löschst die @media-Query komplett. Was passiert auf dem Handy?",a:"Das Zwei-Spalten-Layout bleibt – Sidebar 280px, Inhalt winzig und unleserlich.",lv:2},
+{cat:"F: Änderungen",q:"Du änderst border-radius: 50% auf 10px. Was passiert?",a:"Das Profilbild wird nicht mehr rund, sondern ein Quadrat mit leicht abgerundeten Ecken.",lv:1},
+
+{cat:"G: HTML-Basics",q:"Wofür steht HTML?",a:"HyperText Markup Language – die Standard-Auszeichnungssprache für Webseiten. HTML beschreibt die Struktur, nicht das Aussehen.",lv:1},
+{cat:"G: HTML-Basics",q:"Was passiert, wenn du eine Webseite im Browser aufrufst?",a:"Der Browser (Client) sendet eine Anfrage an den Webserver. Der Server schickt die HTML-Datei zurück. Der Browser interpretiert den Code und zeigt die Seite an.",lv:1},
+{cat:"G: HTML-Basics",q:"Was sind HTML-Tags?",a:"Anweisungen in spitzen Klammern, die Elemente kennzeichnen. Öffnend: <tagname>, Schließend: </tagname>. Manche Tags sind selbstschließend: <br>, <hr>, <img>.",lv:1},
+{cat:"G: HTML-Basics",q:"Nenne drei selbstschließende Tags.",a:"<br> (Zeilenumbruch), <hr> (horizontale Linie), <img> (Bild). Sie haben keinen Inhalt und kein schließendes Tag.",lv:1},
+{cat:"G: HTML-Basics",q:"Wie viele Überschriften-Ebenen gibt es in HTML?",a:"Sechs: <h1> (wichtigste/größte) bis <h6> (unwichtigste/kleinste). Pro Seite sollte es nur ein <h1> geben.",lv:1},
+{cat:"G: HTML-Basics",q:"Was ist der Unterschied zwischen <p> und <br>?",a:"<p> erzeugt einen neuen Absatz mit Abstand. <br> erzeugt nur einen Zeilenumbruch ohne Abstand – der Text geht in der nächsten Zeile weiter.",lv:1},
+{cat:"G: HTML-Basics",q:"Was ist der Unterschied zwischen <strong> und <em>?",a:"<strong> macht Text fett (starke Betonung). <em> macht Text kursiv (Hervorhebung).",lv:1},
+{cat:"G: HTML-Basics",q:"Was sind semantische HTML-Elemente?",a:"Tags, die dem Inhalt eine Bedeutung geben, z.B. <header>, <main>, <footer>, <section>, <nav>. Sie sagen dem Browser und Suchmaschinen, WELCHE Rolle ein Bereich hat.",lv:2},
+{cat:"H: Links & Bilder",q:"Wie erstellt man einen Link zu einer externen Webseite?",a:'<a href="https://www.htl.at">Zur HTL</a>. Das href-Attribut enthält die Zieladresse.',lv:1},
+{cat:"H: Links & Bilder",q:"Wie öffnet man einen Link in einem neuen Tab?",a:'Mit target="_blank": <a href="https://..." target="_blank">. Ohne target öffnet sich der Link im gleichen Tab.',lv:2},
+{cat:"H: Links & Bilder",q:"Wie erstellt man einen E-Mail-Link?",a:'<a href="mailto:info@htl.at">E-Mail senden</a>. Beim Klick öffnet sich das E-Mail-Programm.',lv:1},
+{cat:"H: Links & Bilder",q:"Wie bindet man ein Bild in HTML ein?",a:'<img src="foto.jpg" alt="Beschreibung" width="300">. src = Dateipfad, alt = Alternativtext (für Barrierefreiheit).',lv:1},
+{cat:"H: Links & Bilder",q:"Was macht das alt-Attribut beim <img>-Tag?",a:"Es liefert einen Alternativtext, der angezeigt wird wenn das Bild nicht geladen werden kann. Außerdem lesen Screenreader diesen Text vor.",lv:2},
+{cat:"H: Links & Bilder",q:"Wie macht man ein Bild zum klickbaren Link?",a:'Das <img>-Tag in ein <a>-Tag verschachteln: <a href="seite.html"><img src="bild.jpg" alt="..."></a>.',lv:2},
+{cat:"I: Listen & Tabellen",q:"Was ist der Unterschied zwischen <ul> und <ol>?",a:"<ul> = ungeordnete Liste (Aufzählungszeichen). <ol> = geordnete Liste (Nummerierung 1, 2, 3). Beide verwenden <li> für die einzelnen Punkte.",lv:1},
+{cat:"I: Listen & Tabellen",q:"Aus welchen Elementen besteht eine HTML-Tabelle?",a:"<table> umschließt die ganze Tabelle. <tr> = Tabellenzeile. <th> = Kopfzelle (fett). <td> = Datenzelle. <thead> und <tbody> gruppieren Kopf und Inhalt.",lv:2},
+{cat:"I: Listen & Tabellen",q:"Was macht border-collapse: collapse bei Tabellen?",a:"Verschmilzt die Ränder benachbarter Zellen zu einem einzigen Rahmen, statt doppelte Linien anzuzeigen.",lv:2},
+{cat:"J: CSS-Einbindung",q:"Welche drei Möglichkeiten gibt es, CSS einzubinden?",a:"1) Externe Datei (<link rel='stylesheet' href='style.css'>) – empfohlen. 2) Im <head> mit <style>-Block. 3) Inline direkt am Element (style='...'). Externe Datei ist am wartbarsten.",lv:2},
+{cat:"J: CSS-Einbindung",q:"Was passiert, wenn die gleiche Eigenschaft extern, im <head> und inline gesetzt wird?",a:"Inline gewinnt immer (stärkste). Dann <style> im Head. Dann externe Datei (schwächste). Das ist das Cascading in CSS.",lv:3},
+{cat:"J: CSS-Einbindung",q:"Was bedeutet CSS?",a:"Cascading Style Sheets. Cascading = die Regeln werden nach Priorität gestapelt. Style Sheets = Gestaltungsvorlagen.",lv:1},
+{cat:"J: CSS-Einbindung",q:"Wie werden Farben in CSS angegeben?",a:"Per Name (red, blue), Hex-Wert (#1B4F72), RGB (rgb(27,79,114)) oder RGBA mit Transparenz (rgba(0,0,0,0.5)).",lv:2},
+{cat:"J: CSS-Einbindung",q:"Was macht line-height: 1.6?",a:"Setzt den Zeilenabstand auf das 1,6-fache der Schriftgröße. Größere Werte machen Text luftiger und besser lesbar.",lv:2},
+];
+
+// Quiz: MC-Fragen (Frage + 4 Optionen + correctIdx)
+const quizPool=[
+{cat:"A",q:"Wofür steht der <head>-Bereich?",opts:["Sichtbarer Seiteninhalt","Unsichtbare Infos über die Seite (Titel, CSS-Link)","Navigationsleiste","CSS-Formatierung"],c:1},
+{cat:"A",q:"Welches Tag bindet die externe CSS-Datei ein?",opts:['<style src="styles.css">','<link rel="stylesheet" href="styles.css">','<css file="styles.css">','<import url="styles.css">'],c:1},
+{cat:"A",q:"Was bewirkt <!DOCTYPE html>?",opts:["Macht die Seite responsive","Teilt dem Browser mit: dies ist HTML5","Setzt die Standardschrift","Aktiviert CSS-Unterstützung"],c:1},
+{cat:"A",q:"Was passiert ohne die <link>-Zeile zur CSS-Datei?",opts:["Seite lädt schneller","Seite wird ohne Formatierung angezeigt","Bilder verschwinden","Nichts, CSS lädt automatisch"],c:1},
+{cat:"B",q:"Was ist der Unterschied zwischen id und class?",opts:["id kann mehrfach, class nur einmal verwendet werden","id ist einmalig (1× pro Seite), class kann mehrfach verwendet werden","Kein Unterschied","id ist für CSS, class für JavaScript"],c:1},
+{cat:"B",q:"Welcher CSS-Selektor gehört zu id=\"cv-sidebar\"?",opts:[".cv-sidebar { }","#cv-sidebar { }","cv-sidebar { }","*cv-sidebar { }"],c:1},
+{cat:"B",q:"Was formatiert #cv-sidebar h2?",opts:["Alle h2 auf der ganzen Seite","Nur h2 INNERHALB von #cv-sidebar","Sidebar und h2 gleichzeitig","Ein Element mit beiden Klassen"],c:1},
+{cat:"B",q:"Im HTML steht class=\"eintrag\", im CSS #eintrag. Was passiert?",opts:["Funktioniert normal","Die Formatierung greift nicht – # sucht nach id, nicht class","Nur die erste Klasse wird formatiert","Der Browser korrigiert den Fehler automatisch"],c:1},
+{cat:"C",q:"Was ist der Unterschied zwischen margin und padding?",opts:["Beides ist gleich","margin = Außenabstand, padding = Innenabstand","margin für Bilder, padding für Text","margin = Innenabstand, padding = Außenabstand"],c:1},
+{cat:"C",q:"Warum braucht margin: auto eine feste Breite (max-width)?",opts:["Weil auto nur mit Pixeln funktioniert","Ohne Breite ist die Box 100% – kein Platz zum Verteilen","Der Browser stürzt sonst ab","auto funktioniert nur im body"],c:1},
+{cat:"C",q:"Was macht * { margin: 0; padding: 0; }?",opts:["Löscht alle Elemente","Setzt alle Standardabstände auf 0 zurück","Macht alle Texte unsichtbar","Setzt die Schriftgröße auf 0"],c:1},
+{cat:"C",q:"Was bedeutet rgba(0,0,0,0.15)?",opts:["Weiß mit 15% Helligkeit","Schwarz mit 15% Deckkraft (fast durchsichtig)","Ein Farbverlauf","Rot-Grün-Blau-Alpha in Prozent"],c:1},
+{cat:"D",q:"Was bewirkt display: flex bei .eintrag?",opts:["Kinder stehen untereinander","Kinder stehen nebeneinander","Text wird kursiv","Eintrag bekommt Rahmen"],c:1},
+{cat:"D",q:"Was bedeutet flex: 1?",opts:["Element wird 1px breit","Element nimmt den gesamten restlichen Platz ein","Element wird unsichtbar","Element bekommt 1px Rahmen"],c:1},
+{cat:"D",q:"Was erzeugt grid-template-columns: 280px 1fr?",opts:["Eine Spalte mit 280px","Zwei Spalten: 280px links, Rest rechts","280 gleiche Spalten","Zwei Zeilen übereinander"],c:1},
+{cat:"D",q:"Flexbox vs. Grid – was ist der Unterschied?",opts:["Kein Unterschied","Flexbox = 1 Richtung, Grid = 2 Richtungen (Zeilen + Spalten)","Grid ist veraltet","Flexbox nur für Bilder, Grid nur für Text"],c:1},
+{cat:"E",q:"Welcher border-radius-Wert macht ein Quadrat zum Kreis?",opts:["100px","50%","round","circle"],c:1},
+{cat:"E",q:"Was macht object-fit: cover beim Profilbild?",opts:["Bild wird unsichtbar","Bild wird verzerrt","Bild füllt Rahmen aus, schneidet Überstehendes ab – ohne Verzerrung","Bild wird auf Originalgröße gezeigt"],c:2},
+{cat:"E",q:"Wie funktionieren die Skill-Balken?",opts:["Ein skaliertes Bild","Zwei div ineinander: Hintergrund + Füllung mit Prozent-Breite","Eine HTML-Tabelle","Ein progress-Element"],c:1},
+{cat:"F",q:"Du änderst 280px 1fr auf 1fr 1fr. Was passiert?",opts:["Sidebar verschwindet","Beide Spalten werden gleich breit (je 50%)","Nichts ändert sich","Seite wird responsive"],c:1},
+{cat:"F",q:"Du entfernst display: flex bei .eintrag. Was passiert?",opts:["Alles bleibt gleich","Zeitraum und Details stehen untereinander","Eintrag verschwindet","Schrift ändert sich"],c:1},
+{cat:"F",q:"Du löschst die @media-Query. Was passiert auf dem Handy?",opts:["Layout wird automatisch einspaltig","Zwei-Spalten-Layout bleibt – Inhalt wird unleserlich schmal","Seite funktioniert nicht mehr","Grid passt sich automatisch an"],c:1},
+{cat:"F",q:"Du änderst border-radius: 50% auf 10px. Was passiert?",opts:["Bild wird unsichtbar","Bild wird eckig mit leicht abgerundeten Ecken","Bild wird größer","Nichts ändert sich"],c:1},
+
+{cat:"G",q:"Wofür steht HTML?",opts:["Hyper Tool Markup Language","HyperText Markup Language","High Text Making Language","HyperText Modern Layout"],c:1},
+{cat:"G",q:"Was passiert, wenn du eine Webseite aufrufst?",opts:["CSS wird zuerst geladen, dann HTML","Browser sendet Anfrage → Server schickt HTML → Browser zeigt Seite an","HTML wird auf deinem Computer erstellt","Der Browser schreibt den Code selbst"],c:1},
+{cat:"G",q:"Welches Tag erzeugt einen Zeilenumbruch OHNE Abstand?",opts:["<p>","<br>","<hr>","<lb>"],c:1},
+{cat:"G",q:"Was macht <strong>?",opts:["Text wird kursiv","Text wird fett (starke Betonung)","Text wird unterstrichen","Text wird größer"],c:1},
+{cat:"G",q:"Wie viele Überschriften-Ebenen gibt es?",opts:["3 (h1 bis h3)","6 (h1 bis h6)","4 (h1 bis h4)","Unbegrenzt viele"],c:1},
+{cat:"H",q:"Welches Attribut öffnet einen Link in einem neuen Tab?",opts:["new='tab'","open='blank'","target='_blank'","href='_new'"],c:2},
+{cat:"H",q:"Was macht das alt-Attribut beim <img>-Tag?",opts:["Ändert die Bildgröße","Liefert einen Alternativtext wenn das Bild nicht laden kann","Setzt die Bildqualität","Dreht das Bild"],c:1},
+{cat:"H",q:"Wie macht man ein Bild zum klickbaren Link?",opts:["<img href='seite.html'>","<link><img src='...'></link>","<a href='seite.html'><img src='...'></a>","<img link='seite.html'>"],c:2},
+{cat:"I",q:"Was ist der Unterschied zwischen <ul> und <ol>?",opts:["<ul> hat Nummern, <ol> hat Punkte","<ul> hat Aufzählungszeichen, <ol> hat Nummern","Kein Unterschied","<ul> ist für Text, <ol> für Zahlen"],c:1},
+{cat:"I",q:"Welches Tag steht für eine einzelne Tabellenzelle mit Daten?",opts:["<th>","<tc>","<td>","<cell>"],c:2},
+{cat:"J",q:"Welche CSS-Einbindung hat die HÖCHSTE Priorität?",opts:["Externe CSS-Datei","Im <head> mit <style>","Inline direkt am Element (style='...')","Alle sind gleichwertig"],c:2},
+{cat:"J",q:"Was bedeutet 'Cascading' in CSS?",opts:["Regeln werden nach Priorität gestapelt – die stärkere gewinnt","CSS-Dateien werden verschlüsselt","Farben werden automatisch gemischt","Animationen laufen kaskadenartig ab"],c:0},
+{cat:"J",q:"Welche Angabe ist KEINE gültige CSS-Farbe?",opts:["#1B4F72","rgb(27,79,114)","color(27,79,114)","rgba(0,0,0,0.5)"],c:2},
+];
+
+// Playground
+const pgHTML=`<div id="cv-page"><div id="cv-sidebar"><img src="https://picsum.photos/id/669/300/300" alt="Foto" class="profilbild"/><h1>Lilly Wieser</h1><p class="untertitel">Webdesignerin</p><h2>Kenntnisse</h2><div class="skill"><span class="skill-name">HTML</span><div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div></div><div class="skill"><span class="skill-name">CSS</span><div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div></div><div class="skill"><span class="skill-name">Design</span><div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div></div></div><div id="cv-main"><h2>Berufserfahrung</h2><div class="eintrag"><div class="zeit">2023–2025</div><div class="details"><h3>Webdesignerin</h3><p>Freelance-Projekte für lokale Unternehmen.</p></div></div><div class="eintrag"><div class="zeit">2021–2023</div><div class="details"><h3>Praktikum Grafikagentur</h3><p>Mitarbeit bei Webgrafiken und Drucksorten.</p></div></div><h2>Ausbildung</h2><div class="eintrag"><div class="zeit">2021–2026</div><div class="details"><h3>HTL Informationstechnologie</h3><p>Schwerpunkt Webentwicklung</p></div></div></div></div>`;
+const pgCSS=`/* Hier kannst du alles ändern! */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #333; background: #e0e0e0; }
+
+#cv-page {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  max-width: 900px;
+  margin: 20px auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+#cv-sidebar {
+  background-color: #1B4F72;
+  color: white;
+  padding: 25px 18px;
+}
+#cv-sidebar h1 { font-size: 17pt; text-align: center; }
+#cv-sidebar h2 { font-size: 10pt; text-transform: uppercase; margin-top: 20px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 4px; }
+.untertitel { text-align: center; font-style: italic; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
+
+.profilbild {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 12px auto;
+  border: 3px solid rgba(255,255,255,0.4);
+}
+
+.skill { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.skill-name { width: 60px; font-size: 9pt; }
+.skill-bar { flex: 1; background: rgba(255,255,255,0.15); border-radius: 8px; height: 8px; }
+.skill-fill { background: white; height: 100%; border-radius: 8px; }
+
+#cv-main { background: white; padding: 25px; }
+#cv-main h2 { color: #1B4F72; font-size: 12pt; text-transform: uppercase; border-bottom: 2px solid #2E86C1; padding-bottom: 4px; margin-top: 18px; }
+#cv-main h2:first-child { margin-top: 0; }
+
+.eintrag { display: flex; gap: 14px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+.zeit { width: 100px; font-weight: bold; color: #888; font-size: 9pt; }
+.details { flex: 1; }
+.details h3 { font-size: 10.5pt; color: #1B4F72; margin-bottom: 2px; }
+.details p { font-size: 9.5pt; color: #555; }
+
+@media (max-width: 700px) {
+  #cv-page { grid-template-columns: 1fr; }
+  #cv-sidebar { text-align: center; }
+  .eintrag { flex-direction: column; gap: 3px; }
+  .zeit { width: auto; }
+}`;
+const pgTasks=[
+{txt:"Ändere die <b>Sidebar-Farbe</b> von dunkelblau auf eine andere Farbe deiner Wahl.",hint:"Suche background-color bei #cv-sidebar"},
+{txt:"Mache das <b>Profilbild größer</b>: 160×160px statt 130×130px.",hint:"Suche width und height bei .profilbild"},
+{txt:"Ändere die <b>Sidebar-Breite</b> von 280px auf 350px.",hint:"Suche grid-template-columns bei #cv-page"},
+{txt:"Mache das Profilbild <b>eckig</b> statt rund.",hint:"Ändere border-radius bei .profilbild"},
+{txt:"Entferne <b>display: flex</b> bei .eintrag und beobachte, was passiert.",hint:"Lösche oder kommentiere die Zeile aus"},
+{txt:"Ändere die <b>Schriftfarbe</b> der Überschriften im Hauptbereich auf rot.",hint:"Suche color bei #cv-main h2"},
+];
+
+// ===== STATE =====
+let userName='',userKlasse='';
+// FC state
+let fcFiltered=[],fcIdx=0,fcFlipped=false,fcScores={green:0,yellow:0,red:0},fcHistory=[];
+// Quiz state
+let quizQs=[],quizIdx=0,quizAnswered=false,quizResults=[];
+
+document.getElementById('sn').addEventListener('input',function(){document.getElementById('btn-go').disabled=this.value.trim().length<2;});
+function enterApp(){userName=document.getElementById('sn').value.trim();userKlasse=document.getElementById('sk').value.trim();show('modes');document.getElementById('welcome-msg').textContent='Hallo '+userName+'!';}
+function show(id){['start','modes','fc-screen','quiz-screen','pg-screen','result-screen'].forEach(s=>document.getElementById(s).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
+function backToModes(){show('modes');}
+function openMode(m){if(m==='fc')initFC();else if(m==='quiz')initQuiz();else if(m==='pg')initPG();}
+
+// ===== FLASHCARDS =====
+function initFC(){
+    show('fc-screen');
+    const cats=[...new Set(allCards.map(c=>c.cat))];
+    let fh='<button class="active" onclick="fcFilter(\'all\',this)">Alle</button>';
+    cats.forEach(c=>{fh+='<button onclick="fcFilter(\''+c+'\',this)">'+c.split(': ')[1]+'</button>';});
+    document.getElementById('fc-filters').innerHTML=fh;
+    fcScores={green:0,yellow:0,red:0};fcHistory=[];
+    fcFilter('all',document.querySelector('.fc-filters button'));
+}
+function fcFilter(cat,btn){
+    document.querySelectorAll('.fc-filters button').forEach(b=>b.classList.remove('active'));
+    if(btn)btn.classList.add('active');
+    fcFiltered=cat==='all'?[...allCards]:allCards.filter(c=>c.cat===cat);
+    shuffle(fcFiltered);fcIdx=0;fcFlipped=false;
+    showFC();
+}
+function showFC(){
+    if(fcIdx>=fcFiltered.length){fcIdx=0;shuffle(fcFiltered);}
+    fcFlipped=false;
+    const c=fcFiltered[fcIdx];const stars='⭐'.repeat(c.lv);
+    document.getElementById('fc-card').className='flashcard';
+    document.getElementById('fc-card').innerHTML='<div class="fc-cat">'+esc(c.cat)+'</div><div class="fc-level">'+stars+'</div><div class="fc-label">Frage</div><div class="fc-text">'+esc(c.q)+'</div><div class="fc-hint">Klicke, um die Antwort zu sehen</div>';
+    document.getElementById('fc-rate').classList.add('hidden');
+    updateFCStats();
+}
+function flipCard(){
+    if(fcFlipped)return;fcFlipped=true;
+    const c=fcFiltered[fcIdx];
+    document.getElementById('fc-card').className='flashcard flipped';
+    document.getElementById('fc-card').innerHTML='<div class="fc-cat">'+esc(c.cat)+'</div><div class="fc-label">Antwort</div><div class="fc-text">'+esc(c.a)+'</div>';
+    document.getElementById('fc-rate').classList.remove('hidden');
+}
+function rateCard(r){fcScores[r]++;fcHistory.push(r);fcIdx++;showFC();}
+function updateFCStats(){
+    const t=fcScores.green+fcScores.yellow+fcScores.red;
+    document.getElementById('fc-prog').textContent='Karte '+(fcIdx+1)+' von '+fcFiltered.length+(t>0?' · Bearbeitet: '+t:'');
+    document.getElementById('fc-stats').innerHTML='<span class="fc-s-green">🟢 '+fcScores.green+'</span><span class="fc-s-yellow">🟡 '+fcScores.yellow+'</span><span class="fc-s-red">🔴 '+fcScores.red+'</span>';
+}
+
+// ===== QUIZ =====
+function initQuiz(){
+    show('quiz-screen');
+    const shuffled=[...quizPool];shuffle(shuffled);
+    quizQs=shuffled.slice(0,20);quizIdx=0;quizResults=[];quizAnswered=false;
+    showQuizQ();
+}
+function showQuizQ(){
+    quizAnswered=false;
+    const q=quizQs[quizIdx];
+    document.getElementById('q-bar').style.width=Math.round((quizIdx/quizQs.length)*100)+'%';
+    document.getElementById('q-check').classList.remove('hidden');document.getElementById('q-next').classList.add('hidden');
+    let h='<div class="q-card"><div class="q-num">Frage '+(quizIdx+1)+' von '+quizQs.length+'</div>';
+    h+='<h3>'+esc(q.q)+'</h3><div class="q-options">';
+    q.opts.forEach((o,i)=>{h+='<div class="q-opt" data-i="'+i+'" onclick="quizSel(this)">'+esc(o)+'</div>';});
+    h+='</div><div class="q-feedback" id="q-fb"></div></div>';
+    document.getElementById('q-area').innerHTML=h;
+}
+function quizSel(el){if(quizAnswered)return;document.querySelectorAll('.q-opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');}
+function quizCheck(){
+    if(quizAnswered)return;const sel=document.querySelector('.q-opt.sel');if(!sel)return;
+    quizAnswered=true;const q=quizQs[quizIdx];const i=parseInt(sel.dataset.i);const ok=i===q.c;
+    document.querySelectorAll('.q-opt').forEach((o,j)=>{if(j===q.c)o.classList.add('correct');else if(j===i&&!ok)o.classList.add('wrong');});
+    const fb=document.getElementById('q-fb');fb.className='q-feedback show '+(ok?'ok':'nok');
+    fb.textContent=ok?'✓ Richtig!':'✗ Falsch. Die richtige Antwort ist grün markiert.';
+    quizResults.push({q:q.q,cat:q.cat,ok});
+    document.getElementById('q-check').classList.add('hidden');document.getElementById('q-next').classList.remove('hidden');
+}
+function quizNext(){quizIdx++;if(quizIdx<quizQs.length)showQuizQ();else showQuizResult();}
+function showQuizResult(){
+    show('result-screen');
+    const correct=quizResults.filter(r=>r.ok).length;const total=quizResults.length;
+    const pct=Math.round((correct/total)*100);const cls=pct>=90?'a':pct>=70?'b':pct>=50?'c':'d';
+    const cats={};quizResults.forEach(r=>{if(!cats[r.cat])cats[r.cat]={n:r.cat,c:0,t:0};cats[r.cat].t++;if(r.ok)cats[r.cat].c++;});
+    let h='<div class="res-card"><h1 style="color:var(--primary)">Quiz-Ergebnis für '+userName+'</h1>';
+    h+='<div class="res-pct '+cls+'">'+pct+'%</div>';
+    h+='<p style="color:var(--gray)">'+correct+' von '+total+' richtig</p>';
+    h+='<div class="res-bars">';
+    Object.values(cats).forEach(c=>{const p=Math.round((c.c/c.t)*100);const col=p>=70?'var(--green)':p>=40?'var(--orange)':'var(--red)';
+        h+='<div class="res-row"><div class="res-row-name">'+c.n+'</div><div class="res-row-bar"><div class="res-row-fill" style="width:'+p+'%;background:'+col+'"></div></div><div class="res-row-sc">'+c.c+'/'+c.t+'</div></div>';});
+    h+='</div>';
+    h+='<div style="margin-top:20px"><button class="btn" onclick="dlQuizPDF()">📄 PDF</button> <button class="btn btn-outline" onclick="show(\'modes\')" style="margin-left:8px">← Zurück</button></div></div>';
+    document.getElementById('result-screen').innerHTML=h;
+}
+async function dlQuizPDF(){
+    const correct=quizResults.filter(r=>r.ok).length;const total=quizResults.length;
+    const cats={};quizResults.forEach(r=>{if(!cats[r.cat])cats[r.cat]={name:r.cat,points:0,max:0};cats[r.cat].max++;if(r.ok)cats[r.cat].points++;});
+    try{const res=await fetch('/api/generate-pdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:userName,klasse:userKlasse,totalPoints:correct,maxPoints:total,categories:Object.values(cats),questions:quizResults.map((r,i)=>({title:r.q,points:r.ok?1:0,max:1,correct:r.ok,answer:r.ok?'Richtig':'Falsch'}))})});
+    const blob=await res.blob();const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='Quiz_'+userName.replace(/\s/g,'_')+'.pdf';a.click();URL.revokeObjectURL(url);
+    }catch(e){alert('PDF-Erstellung fehlgeschlagen.');}
+}
+
+// ===== PLAYGROUND =====
+function initPG(){
+    show('pg-screen');
+    document.getElementById('pg-css').value=pgCSS;
+    let th='';pgTasks.forEach((t,i)=>{th+='<div class="pg-task" id="pgt-'+i+'" onclick="this.classList.toggle(\'done\')">'+t.txt+'</div>';});
+    document.getElementById('pg-tasks').innerHTML=th;
+    updatePreview();
+}
+function updatePreview(){
+    const css=document.getElementById('pg-css').value;
+    const iframe=document.getElementById('pg-iframe');
+    const doc=iframe.contentDocument||iframe.contentWindow.document;
+    doc.open();doc.write('<!DOCTYPE html><html><head><style>'+css+'</style></head><body>'+pgHTML+'</body></html>');doc.close();
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+</script></body></html>
