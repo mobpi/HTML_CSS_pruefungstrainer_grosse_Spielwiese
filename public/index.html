@@ -72,8 +72,12 @@ h1{color:var(--primary);font-size:1.8em}h2{color:var(--accent)}
 .pg-preview{border:2px solid var(--border);border-radius:10px;overflow:hidden;background:#fff}
 .pg-preview iframe{width:100%;height:380px;border:none}
 .pg-tasks{margin-top:16px}.pg-task{background:var(--card);border-radius:10px;padding:14px 18px;margin-bottom:10px;border-left:4px solid var(--accent);font-size:.9em;cursor:pointer;transition:background .2s}
-.pg-task:hover{background:var(--lighter)}.pg-task.done{border-left-color:var(--green);opacity:.6}
+.pg-task:hover{background:var(--lighter)}.pg-task.pg-ok{border-left-color:var(--green);background:#e8f5e9}.pg-task.pg-nok{border-left-color:var(--red);background:#fce4ec}
 .pg-task b{color:var(--primary)}
+.pg-task-row{display:flex;align-items:center;gap:10px}.pg-task-txt{flex:1}.pg-task-btn{padding:6px 16px;border:none;border-radius:6px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;font-family:inherit;font-size:.82em;white-space:nowrap}.pg-task-btn:hover{background:var(--primary)}
+.pg-task-result{font-weight:600;font-size:.85em;min-width:20px;text-align:center}
+.pg-score{text-align:center;margin-top:16px;padding:14px;background:var(--card);border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);font-size:.95em}
+.pg-reset-row{text-align:center;margin-top:10px}
 
 /* RESULT */
 .res-card{background:var(--card);border-radius:14px;padding:35px;box-shadow:0 2px 15px rgba(0,0,0,.06);text-align:center;margin-top:20px}
@@ -126,8 +130,10 @@ h1{color:var(--primary);font-size:1.8em}h2{color:var(--accent)}
 <h2 style="margin-bottom:4px">🛠️ Code-Spielplatz</h2><p style="color:var(--gray);font-size:.9em;margin-bottom:10px">Ändere das CSS links – die Vorschau rechts aktualisiert sich sofort.</p>
 <div class="pg-layout"><div class="pg-editor"><textarea id="pg-css" oninput="updatePreview()" spellcheck="false"></textarea></div>
 <div class="pg-preview"><iframe id="pg-iframe"></iframe></div></div>
-<h3 style="margin-top:20px;color:var(--primary)">Aufgaben</h3>
-<div class="pg-tasks" id="pg-tasks"></div></div>
+<h3 style="margin-top:20px;color:var(--primary)">Aufgaben — Ändere das CSS und prüfe deine Lösung</h3>
+<div class="pg-tasks" id="pg-tasks"></div>
+<div class="pg-score hidden" id="pg-score"></div>
+<div class="pg-reset-row"><button class="btn btn-sm btn-orange" onclick="pgReset()">↺ CSS zurücksetzen</button></div></div>
 
 <!-- ERGEBNIS -->
 <div id="result-screen" class="hidden"></div>
@@ -238,7 +244,7 @@ const quizPool=[
 
 // Playground
 const pgHTML=`<div id="cv-page"><div id="cv-sidebar"><img src="https://picsum.photos/id/669/300/300" alt="Foto" class="profilbild"/><h1>Lilly Wieser</h1><p class="untertitel">Webdesignerin</p><h2>Kenntnisse</h2><div class="skill"><span class="skill-name">HTML</span><div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div></div><div class="skill"><span class="skill-name">CSS</span><div class="skill-bar"><div class="skill-fill" style="width:85%"></div></div></div><div class="skill"><span class="skill-name">Design</span><div class="skill-bar"><div class="skill-fill" style="width:70%"></div></div></div></div><div id="cv-main"><h2>Berufserfahrung</h2><div class="eintrag"><div class="zeit">2023–2025</div><div class="details"><h3>Webdesignerin</h3><p>Freelance-Projekte für lokale Unternehmen.</p></div></div><div class="eintrag"><div class="zeit">2021–2023</div><div class="details"><h3>Praktikum Grafikagentur</h3><p>Mitarbeit bei Webgrafiken und Drucksorten.</p></div></div><h2>Ausbildung</h2><div class="eintrag"><div class="zeit">2021–2026</div><div class="details"><h3>HTL Informationstechnologie</h3><p>Schwerpunkt Webentwicklung</p></div></div></div></div>`;
-const pgCSS=`/* Hier kannst du alles ändern! */
+const pgCSS=`/* === Hier kannst du alles ändern! === */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #333; background: #e0e0e0; }
 
@@ -246,58 +252,74 @@ body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #333; ba
   display: grid;
   grid-template-columns: 280px 1fr;
   max-width: 900px;
-  margin: 20px auto;
+  margin: 10px auto;
   box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
 
 #cv-sidebar {
   background-color: #1B4F72;
   color: white;
-  padding: 25px 18px;
+  padding: 20px 15px;
 }
-#cv-sidebar h1 { font-size: 17pt; text-align: center; }
-#cv-sidebar h2 { font-size: 10pt; text-transform: uppercase; margin-top: 20px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 4px; }
-.untertitel { text-align: center; font-style: italic; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
+#cv-sidebar h1 { font-size: 15pt; text-align: center; }
+#cv-sidebar h2 { font-size: 9pt; text-transform: uppercase; margin-top: 16px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 3px; }
+.untertitel { text-align: center; font-style: italic; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
 
 .profilbild {
-  width: 130px;
-  height: 130px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
   display: block;
-  margin: 0 auto 12px auto;
+  margin: 0 auto 10px auto;
   border: 3px solid rgba(255,255,255,0.4);
 }
 
-.skill { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
-.skill-name { width: 60px; font-size: 9pt; }
-.skill-bar { flex: 1; background: rgba(255,255,255,0.15); border-radius: 8px; height: 8px; }
+.skill { display: flex; align-items: center; gap: 6px; margin: 5px 0; }
+.skill-name { width: 55px; font-size: 8pt; }
+.skill-bar { flex: 1; background: rgba(255,255,255,0.15); border-radius: 8px; height: 7px; }
 .skill-fill { background: white; height: 100%; border-radius: 8px; }
 
-#cv-main { background: white; padding: 25px; }
-#cv-main h2 { color: #1B4F72; font-size: 12pt; text-transform: uppercase; border-bottom: 2px solid #2E86C1; padding-bottom: 4px; margin-top: 18px; }
+#cv-main { background: white; padding: 20px; }
+#cv-main h2 { color: #1B4F72; font-size: 11pt; text-transform: uppercase; border-bottom: 2px solid #2E86C1; padding-bottom: 3px; margin-top: 14px; }
 #cv-main h2:first-child { margin-top: 0; }
 
-.eintrag { display: flex; gap: 14px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
-.zeit { width: 100px; font-weight: bold; color: #888; font-size: 9pt; }
+.eintrag { display: flex; gap: 12px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
+.zeit { width: 90px; font-weight: bold; color: #888; font-size: 8pt; }
 .details { flex: 1; }
-.details h3 { font-size: 10.5pt; color: #1B4F72; margin-bottom: 2px; }
-.details p { font-size: 9.5pt; color: #555; }
+.details h3 { font-size: 9.5pt; color: #1B4F72; margin-bottom: 1px; }
+.details p { font-size: 9pt; color: #555; }`;
 
-@media (max-width: 700px) {
-  #cv-page { grid-template-columns: 1fr; }
-  #cv-sidebar { text-align: center; }
-  .eintrag { flex-direction: column; gap: 3px; }
-  .zeit { width: auto; }
-}`;
 const pgTasks=[
-{txt:"Ändere die <b>Sidebar-Farbe</b> von dunkelblau auf eine andere Farbe deiner Wahl.",hint:"Suche background-color bei #cv-sidebar"},
-{txt:"Mache das <b>Profilbild größer</b>: 160×160px statt 130×130px.",hint:"Suche width und height bei .profilbild"},
-{txt:"Ändere die <b>Sidebar-Breite</b> von 280px auf 350px.",hint:"Suche grid-template-columns bei #cv-page"},
-{txt:"Mache das Profilbild <b>eckig</b> statt rund.",hint:"Ändere border-radius bei .profilbild"},
-{txt:"Entferne <b>display: flex</b> bei .eintrag und beobachte, was passiert.",hint:"Lösche oder kommentiere die Zeile aus"},
-{txt:"Ändere die <b>Schriftfarbe</b> der Überschriften im Hauptbereich auf rot.",hint:"Suche color bei #cv-main h2"},
+{txt:"Ändere die <b>Sidebar-Hintergrundfarbe</b> auf grün: <code>#2E7D32</code>",pts:2,label:"Sidebar-Farbe ändern",
+ check:function(d){const s=gs(d,'#cv-sidebar','backgroundColor');return s&&toHex(s)==='#2e7d32';}},
+{txt:"Ändere die <b>Schriftfarbe</b> der Sidebar auf gelb: <code>#FFEB3B</code>",pts:2,label:"Sidebar-Schriftfarbe",
+ check:function(d){const s=gs(d,'#cv-sidebar','color');return s&&toHex(s)==='#ffeb3b';}},
+{txt:"Mache das <b>Profilbild</b> größer: <code>160x160px</code>",pts:3,label:"Profilbild vergrößern",
+ check:function(d){const s=gs(d,'.profilbild','width');return s&&parseInt(s)>=155;}},
+{txt:"Mache das Profilbild <b>eckig</b> mit leicht runden Ecken: <code>border-radius: 10px</code>",pts:3,label:"Profilbild eckig",
+ check:function(d){const s=gs(d,'.profilbild','borderRadius');return s&&s!=='50%'&&parseInt(s)<=20&&parseInt(s)>=5;}},
+{txt:"Ändere die <b>Sidebar-Breite</b> von 280px auf <code>200px</code>",pts:3,label:"Sidebar-Breite ändern",
+ check:function(d){const s=gs(d,'#cv-page','gridTemplateColumns');return s&&s.includes('200');}},
+{txt:"Entferne den <b>Schatten</b> um die Seite (box-shadow: <code>none</code>)",pts:2,label:"Schatten entfernen",
+ check:function(d){const s=gs(d,'#cv-page','boxShadow');return s==='none'||s==='';}},
+{txt:"Ändere die <b>Überschriften-Farbe</b> im Hauptbereich auf rot: <code>#C0392B</code>",pts:2,label:"Überschriften rot",
+ check:function(d){const s=gs(d,'#cv-main h2','color');return s&&toHex(s)==='#c0392b';}},
+{txt:"Ändere die <b>Hintergrundfarbe</b> der Seite (body) auf hellblau: <code>#D6EAF8</code>",pts:2,label:"Body-Hintergrund",
+ check:function(d){const s=gs(d,'body','backgroundColor');return s&&toHex(s)==='#d6eaf8';}},
+{txt:"Ändere die <b>Schriftart</b> der gesamten Seite auf <code>Georgia</code>",pts:3,label:"Schriftart ändern",
+ check:function(d){const s=gs(d,'body','fontFamily');return s&&s.toLowerCase().includes('georgia');}},
+{txt:"Ändere die <b>Unterstreichungsfarbe</b> der Überschriften im Hauptbereich auf orange: <code>#E67E22</code>",pts:3,label:"Überschriften-Linie orange",
+ check:function(d){const s=gs(d,'#cv-main h2','borderBottomColor');return s&&toHex(s)==='#e67e22';}},
+{txt:"Mache den <b>Hintergrund</b> des Hauptbereichs leicht grau: <code>#F5F5F5</code>",pts:2,label:"Hauptbereich-Hintergrund",
+ check:function(d){const s=gs(d,'#cv-main','backgroundColor');return s&&toHex(s)==='#f5f5f5';}},
+{txt:"Entferne <b>display: flex</b> bei .eintrag (lösche oder ändere zu <code>block</code>) und beobachte die Auswirkung",pts:3,label:"Flexbox entfernen",
+ check:function(d){const s=gs(d,'.eintrag','display');return s&&s!=='flex';}},
 ];
+
+// Helper: get computed style from iframe
+function gs(doc,sel,prop){try{const el=doc.querySelector(sel);if(!el)return null;return getComputedStyle(el)[prop];}catch(e){return null;}}
+function toHex(c){if(c.startsWith('#'))return c.toLowerCase();const m=c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);if(!m)return c;return '#'+[m[1],m[2],m[3]].map(x=>(+x).toString(16).padStart(2,'0')).join('');}
 
 // ===== STATE =====
 let userName='',userKlasse='';
@@ -305,6 +327,8 @@ let userName='',userKlasse='';
 let fcFiltered=[],fcIdx=0,fcFlipped=false,fcScores={green:0,yellow:0,red:0},fcHistory=[];
 // Quiz state
 let quizQs=[],quizIdx=0,quizAnswered=false,quizResults=[];
+// Playground state
+let pgResults={};  // {taskIndex: true/false}
 
 document.getElementById('sn').addEventListener('input',function(){document.getElementById('btn-go').disabled=this.value.trim().length<2;});
 function enterApp(){userName=document.getElementById('sn').value.trim();userKlasse=document.getElementById('sk').value.trim();show('modes');document.getElementById('welcome-msg').textContent='Hallo '+userName+'!';}
@@ -408,8 +432,14 @@ async function dlQuizPDF(){
 function initPG(){
     show('pg-screen');
     document.getElementById('pg-css').value=pgCSS;
-    let th='';pgTasks.forEach((t,i)=>{th+='<div class="pg-task" id="pgt-'+i+'" onclick="this.classList.toggle(\'done\')">'+t.txt+'</div>';});
+    pgResults={};
+    const maxPts=pgTasks.reduce((s,t)=>s+t.pts,0);
+    let th='';pgTasks.forEach((t,i)=>{
+        th+='<div class="pg-task" id="pgt-'+i+'"><div class="pg-task-row"><div class="pg-task-txt">'+t.txt+' <span style="color:var(--accent);font-size:.8em">('+t.pts+'P)</span></div><button class="pg-task-btn" onclick="checkPgTask('+i+',event)">Prüfen</button><div class="pg-task-result" id="pgr-'+i+'"></div></div></div>';
+    });
     document.getElementById('pg-tasks').innerHTML=th;
+    document.getElementById('pg-score').classList.add('hidden');
+    document.getElementById('pg-score').innerHTML='';
     updatePreview();
 }
 function updatePreview(){
@@ -417,6 +447,60 @@ function updatePreview(){
     const iframe=document.getElementById('pg-iframe');
     const doc=iframe.contentDocument||iframe.contentWindow.document;
     doc.open();doc.write('<!DOCTYPE html><html><head><style>'+css+'</style></head><body>'+pgHTML+'</body></html>');doc.close();
+}
+function checkPgTask(i,ev){
+    if(ev)ev.stopPropagation();
+    updatePreview();
+    setTimeout(function(){
+        const iframe=document.getElementById('pg-iframe');
+        const idoc=iframe.contentDocument||iframe.contentWindow.document;
+        const ok=pgTasks[i].check(idoc);
+        pgResults[i]=ok;
+        const el=document.getElementById('pgt-'+i);
+        const res=document.getElementById('pgr-'+i);
+        el.className='pg-task '+(ok?'pg-ok':'pg-nok');
+        res.textContent=ok?'✓ '+pgTasks[i].pts+'P':'✗ 0P';
+        res.style.color=ok?'var(--green)':'var(--red)';
+        updatePgScore();
+    },150);
+}
+function updatePgScore(){
+    const checked=Object.keys(pgResults).length;
+    const okPts=Object.keys(pgResults).filter(k=>pgResults[k]).reduce((s,k)=>s+pgTasks[k].pts,0);
+    const maxPts=pgTasks.reduce((s,t)=>s+t.pts,0);
+    const checkedPts=Object.keys(pgResults).reduce((s,k)=>s+pgTasks[k].pts,0);
+    const el=document.getElementById('pg-score');
+    el.classList.remove('hidden');
+    const pct=checkedPts>0?Math.round((okPts/checkedPts)*100):0;
+    let h='<b>'+okPts+'</b> von <b>'+checkedPts+'</b> geprüften Punkten erreicht';
+    if(checked>=pgTasks.length){
+        h='<div style="font-size:1.2em;margin-bottom:8px"><b>Ergebnis: '+okPts+' / '+maxPts+' Punkte ('+pct+'%)</b></div>';
+        h+='<button class="btn btn-sm" onclick="dlPgPDF()" style="margin-top:8px">📄 PDF herunterladen</button>';
+    }
+    el.innerHTML=h;
+}
+function pgReset(){
+    document.getElementById('pg-css').value=pgCSS;
+    updatePreview();pgResults={};
+    pgTasks.forEach((t,i)=>{document.getElementById('pgt-'+i).className='pg-task';document.getElementById('pgr-'+i).textContent='';});
+    document.getElementById('pg-score').classList.add('hidden');
+}
+async function dlPgPDF(){
+    const okPts=Object.keys(pgResults).filter(k=>pgResults[k]).reduce((s,k)=>s+pgTasks[k].pts,0);
+    const maxPts=pgTasks.reduce((s,t)=>s+t.pts,0);
+    const questions=pgTasks.map((t,i)=>({
+        title:t.label, points:pgResults[i]?t.pts:0, max:t.pts,
+        correct:!!pgResults[i], answer:pgResults[i]?'Gelöst':'Nicht gelöst'
+    }));
+    try{
+        const res=await fetch('/api/generate-pdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+            name:userName,klasse:userKlasse,totalPoints:okPts,maxPoints:maxPts,
+            categories:[{name:'Code-Spielplatz',points:okPts,max:maxPts}],
+            questions:questions
+        })});
+        const blob=await res.blob();const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');a.href=url;a.download='Spielplatz_'+userName.replace(/\s/g,'_')+'.pdf';a.click();URL.revokeObjectURL(url);
+    }catch(e){alert('PDF-Erstellung fehlgeschlagen.');}
 }
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
