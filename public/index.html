@@ -388,17 +388,23 @@ function showQuizQ(){
     const q=quizQs[quizIdx];
     document.getElementById('q-bar').style.width=Math.round((quizIdx/quizQs.length)*100)+'%';
     document.getElementById('q-check').classList.remove('hidden');document.getElementById('q-next').classList.add('hidden');
+    // Shuffle options while tracking correct answer
+    const indices=q.opts.map((_,i)=>i);
+    shuffle(indices);
+    const shuffledOpts=indices.map(i=>q.opts[i]);
+    const correctShuffled=indices.indexOf(q.c);
+    q._shuffled=shuffledOpts;q._correctIdx=correctShuffled;
     let h='<div class="q-card"><div class="q-num">Frage '+(quizIdx+1)+' von '+quizQs.length+'</div>';
     h+='<h3>'+esc(q.q)+'</h3><div class="q-options">';
-    q.opts.forEach((o,i)=>{h+='<div class="q-opt" data-i="'+i+'" onclick="quizSel(this)">'+esc(o)+'</div>';});
+    shuffledOpts.forEach((o,i)=>{h+='<div class="q-opt" data-i="'+i+'" onclick="quizSel(this)">'+esc(o)+'</div>';});
     h+='</div><div class="q-feedback" id="q-fb"></div></div>';
     document.getElementById('q-area').innerHTML=h;
 }
 function quizSel(el){if(quizAnswered)return;document.querySelectorAll('.q-opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');}
 function quizCheck(){
     if(quizAnswered)return;const sel=document.querySelector('.q-opt.sel');if(!sel)return;
-    quizAnswered=true;const q=quizQs[quizIdx];const i=parseInt(sel.dataset.i);const ok=i===q.c;
-    document.querySelectorAll('.q-opt').forEach((o,j)=>{if(j===q.c)o.classList.add('correct');else if(j===i&&!ok)o.classList.add('wrong');});
+    quizAnswered=true;const q=quizQs[quizIdx];const i=parseInt(sel.dataset.i);const ci=q._correctIdx;const ok=i===ci;
+    document.querySelectorAll('.q-opt').forEach((o,j)=>{if(j===ci)o.classList.add('correct');else if(j===i&&!ok)o.classList.add('wrong');});
     const fb=document.getElementById('q-fb');fb.className='q-feedback show '+(ok?'ok':'nok');
     fb.textContent=ok?'✓ Richtig!':'✗ Falsch. Die richtige Antwort ist grün markiert.';
     quizResults.push({q:q.q,cat:q.cat,ok});
